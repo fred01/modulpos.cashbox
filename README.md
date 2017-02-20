@@ -1,0 +1,1 @@
+# modulpos.cashbox
