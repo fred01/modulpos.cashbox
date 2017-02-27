@@ -1,0 +1,21 @@
+{
+  "name": "modulpos.cashbox",
+  "description": "Интернет-касса от МодульБанк",
+  "keywords": ["bitrix", "Битрикс", "d7", "модуль"],
+  "type": "bitrix-module",
+  "license": "MIT",
+  "support": {
+  },
+  "authors": [
+    {
+      "name": "Sviridov Alexey",
+      "email": "sviridov.alexey@gmail.com"
+    }
+  ],
+  "extra": {
+    "installer-name": "modulpos.cashbox"
+  },
+  "require": {
+    "composer/installers": ">=1.0.22 <2.0"
+  }
+}
