@@ -4,12 +4,15 @@ namespace Modulpos\Cashbox;
 
 use Bitrix\Main;
 use Bitrix\Main\Config\Option;
+use Bitrix\Sale\Cashbox\Cashbox;
+use Bitrix\Sale\Cashbox\Check;
 use Bitrix\Sale\Cashbox\Internals\CashboxTable;
 
 defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
 
-class CashboxModul {	
-	const FN_BASE_URL = 'https://staging.dev.avanpos.com/api/fn';
+class CashboxModul extends Cashbox {	
+//	const FN_BASE_URL = 'https://staging.dev.avanpos.com/api/fn';
+	const FN_BASE_URL = 'http://192.168.1.50:8081/fn';
 	
 	public static function generateDocumentId() {
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -212,7 +215,15 @@ class CashboxModul {
         return sprintf('%s://%s%s/bitrix/tools/%s?token=%s', $scheme, $domain, $port, $handler_file, $token);
     }    
 
-	public static function getCheckLink(array $linkParams)
+    public function buildCheckQuery(Check $check) {
+        return array();
+    }
+    
+    public function buildZReportQuery($id) {
+        return array();
+    }    
+
+	public function getCheckLink(array $linkParams)
 	{
 		if (isset($linkParams['qr']) && !empty($linkParams['qr']))
 		{
@@ -220,7 +231,6 @@ class CashboxModul {
 			if ($ofd !== null)
 				return $ofd->generateCheckLink($linkParams['qr']);
 		}
-
 		return '';
 	}
     
