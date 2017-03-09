@@ -11,8 +11,8 @@ use Bitrix\Sale\Cashbox\Internals\CashboxTable;
 defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
 
 class CashboxModul extends Cashbox {	
-//	const FN_BASE_URL = 'https://staging.dev.avanpos.com/api/fn';
-	const FN_BASE_URL = 'http://192.168.1.50:8081/fn';
+	const FN_BASE_URL = 'https://staging.dev.avanpos.com/api/fn';
+//	const FN_BASE_URL = 'http://192.168.1.50:8081/fn';
 	
 	public static function generateDocumentId() {
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',

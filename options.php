@@ -43,6 +43,8 @@ if ((!empty($save) || !empty($restore)) && $request->isPost() && check_bitrix_se
         Option::set(MODULE_NAME, "login", $login);
         Option::set(MODULE_NAME, "password", $password);
         Option::set(MODULE_NAME, "retailpoint_id", $retailpoint_id);
+        Option::set(MODULE_NAME, 'associated_login', '#empty#'); // TODO Make real association here and store it in properties
+        Option::set(MODULE_NAME, 'associated_password', '#empty#');
         CAdminMessage::showMessage(array("MESSAGE" => Loc::getMessage("REFERENCES_OPTIONS_SAVED"),"TYPE" => "OK"));
       } else {
         CAdminMessage::showMessage(Loc::getMessage("REFERENCES_INVALID_VALUE"));
