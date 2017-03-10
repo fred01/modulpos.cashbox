@@ -11,8 +11,7 @@ use Bitrix\Sale\Cashbox\Internals\CashboxTable;
 defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
 
 class CashboxModul extends Cashbox {	
-	const FN_BASE_URL = 'https://staging.dev.avanpos.com/api/fn';
-//	const FN_BASE_URL = 'http://192.168.1.50:8081/fn';
+	const FN_BASE_URL = 'https://demo-fn.avanpos.com/api/fn';
 	
 	public static function generateDocumentId() {
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -25,8 +24,8 @@ class CashboxModul extends Cashbox {
 	}
 	
 	public static function log($log_entry, $log_file="/var/log/php/modulpos.cashbox.log") {
-		// 		Uncomment line bellow to enable debuging of module
-		file_put_contents($log_file, "\n".date('Y-m-d H:i:sP').' : '.$log_entry, FILE_APPEND);
+		// Uncomment line bellow to enable debuging of module
+		// file_put_contents($log_file, "\n".date('Y-m-d H:i:sP').' : '.$log_entry, FILE_APPEND);
 	}
 	
 	public static function getModulCashboxId() {
@@ -233,6 +232,5 @@ class CashboxModul extends Cashbox {
 		}
 		return '';
 	}
-    
 }
 ?>
