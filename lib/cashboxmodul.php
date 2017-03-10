@@ -11,7 +11,7 @@ use Bitrix\Sale\Cashbox\Internals\CashboxTable;
 defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
 
 class CashboxModul extends Cashbox {	
-	const FN_BASE_URL = 'https://demo-fn.avanpos.com/api/fn';
+	const FN_BASE_URL = 'http://demo-fn.avanpos.com/fn';
 	
 	public static function generateDocumentId() {
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -77,7 +77,7 @@ class CashboxModul extends Cashbox {
             $options['http']['content'] = $data;
         }
         $context  = stream_context_create($options);
-        static::log("Request: ".$method.' '.$url."\n$headers_string\n".$data);
+        static::log("Request: ".$method.' '.static::FN_BASE_URL.$url."\n$headers_string\n".$data);
         $response = file_get_contents(static::FN_BASE_URL.$url, false, $context);
         if ($response === false) { 
             static::log("Error:".var_export(error_get_last(), true));
