@@ -10,6 +10,8 @@ Loc::loadMessages(__FILE__);
 
 class modulpos_cashbox extends CModule
 {
+    var $MODULE_ID = 'modulpos.cashbox';
+
     public function __construct()
     {
         $arModuleVersion = array();
