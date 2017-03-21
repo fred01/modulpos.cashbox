@@ -32,8 +32,7 @@ if ($accessDenied)
 $APPLICATION->RestartBuffer();
 header('Content-Type: application/json');
 
-$result = array()
-$result['']
+$result = array();
 
 echo Main\Web\Json::encode($result);
 

@@ -7,35 +7,31 @@ use Bitrix\Main\Config\Option;
 use Bitrix\Sale\Cashbox\Cashbox;
 use Bitrix\Sale\Cashbox\Check;
 use Bitrix\Sale\Cashbox\Internals\CashboxTable;
+use Bitrix\Main\Localization\Loc;
 
 defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
 
+Loc::loadMessages(__FILE__);
+
+
+
 class CashboxModul extends Cashbox {	
 	const FN_BASE_URL = 'http://demo-fn.avanpos.com/fn';
-	
-	public static function generateDocumentId() {
-		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-		          mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-		          mt_rand(0, 0xffff),
-		          mt_rand(0, 0x0fff) | 0x4000,
-		          mt_rand(0, 0x3fff) | 0x8000,
-		          mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-		       );
-	}
-	
+    const CACHE_ID = 'MODULPOS_CASHBOX_ID';
+    const CACHE_EXPIRE_TIME = 31536000;
+		
 	public static function log($log_entry, $log_file="/var/log/php/modulpos.cashbox.log") {
 		// Uncomment line bellow to enable debuging of module
 		// file_put_contents($log_file, "\n".date('Y-m-d H:i:sP').' : '.$log_entry, FILE_APPEND);
 	}
 	
 	public static function getModulCashboxId() {
-        $CACHE_ID = 'MODULPOS_CASHBOX_ID';
 
 		$id = 0;
 		$cacheManager = Main\Application::getInstance()->getManagedCache();
 		
-		if ($cacheManager->read(31536000, $CACHE_ID)) {
-			$id = $cacheManager->get($CACHE_ID);
+		if ($cacheManager->read(CACHE_EXPIRE_TIME, CACHE_ID)) {
+			$id = $cacheManager->get(CACHE_ID);
 		}
 		
 		if ($id <= 0) {
@@ -120,7 +116,7 @@ class CashboxModul extends Cashbox {
     }
 
     public static function getName() {
-        return 'Модуль.Касса';
+        return Loc::getMessage('CASHBOX_MODULPOS_NAME');
     }
 
     public static function enqueCheck($check) {         
@@ -139,7 +135,7 @@ class CashboxModul extends Cashbox {
 
 	private static function createDocuemntByCheck($checkData) {
 		$document = array(
-		           'id' => $checkData['unique_id'], // self::generateDocumentId(),
+		           'id' => $checkData['unique_id'],
 		           'checkoutDateTime' => $checkData['date_create']->format(DATE_ATOM),
 		           'docNum' => $checkData['unique_id'],
 		           'docType' => $checkData['type'] == 'sell' || $checkData['type'] == 'sellorder' ? 'SALE' : 'RETURN',

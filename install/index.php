@@ -32,7 +32,7 @@ class modulpos_cashbox extends CModule
         $this->PARTNER_URI = 'http://modulpos.ru';
     }
 
-    public function doInstall()
+    function DoInstall()
     {
         ModuleManager::registerModule($this->MODULE_ID);
 
@@ -42,7 +42,7 @@ class modulpos_cashbox extends CModule
         CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/modulpos.cashbox/install/tools", $_SERVER["DOCUMENT_ROOT"]."/bitrix/tools", true, true);
     }
 
-    public function doUninstall()
+    function DoUninstall()
     {
         DeleteDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/modulpos.cashbox/install/tools", $_SERVER["DOCUMENT_ROOT"]."/bitrix/tools");
         $eventManager = \Bitrix\Main\EventManager::getInstance();
