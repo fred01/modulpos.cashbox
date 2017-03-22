@@ -124,7 +124,7 @@ $tabControl->begin();
     ?>
 
     <? else: ?>
-    <span><?=Loc::getMessage("MODULPOS_ASSOCIATED_SUCCESSFULY") ?></span>
+    <span><?=Loc::getMessage("MODULPOS_ASSOCIATED_SUCCESSFULY").' '.Option::get(MODULE_NAME, 'retail_point_info', '')?></span>
     <?php
     $tabControl->buttons();
     ?>    

@@ -96,8 +96,17 @@ class CashboxModul extends Cashbox {
         if ($response !== false) {
             $associated_login = $response['userName'];
             $associated_password = $response['password'];
+            $retail_point_info = '';
+            if ($response['name']) {
+                $retail_point_info .= $response['name'];
+            }
+            if ($response['address']) {
+                $retail_point_info .= ' '.$response['address'];
+            }
+             
             Option::set(MODULE_NAME, 'associated_login', $associated_login);
             Option::set(MODULE_NAME, 'associated_password', $associated_password);
+            Option::set(MODULE_NAME, 'retail_point_info', $retail_point_info);
             return array(
                 'success' => TRUE,
                 'data' => array(
@@ -111,6 +120,20 @@ class CashboxModul extends Cashbox {
                 'error' => error_get_last()['message']
             );
         }
+    }
+
+    public static function removeCurrentAssociation() {
+        $credentials = static::getAssociationData();
+        if ($credentials !== FALSE) {
+            $response = static::sendHttpRequest('/associate', 'DELETE', $credentials);
+            if ($response === FALSE) {
+                // Actually doesn't matter'
+                static::log('Error deleting association:'.var_export(error_get_last(), TRUE));
+            }
+        } else {
+            static::log('ERROR: CashboxModul module not configured. Can not remove association');
+        }
+        
     }
 
     private static function getAssociationData() {
