@@ -16,13 +16,13 @@ Loc::loadMessages(__FILE__);
 
 
 class CashboxModul extends Cashbox {	
-	const FN_BASE_URL = 'http://demo-fn.avanpos.com/fn';
+	const FN_BASE_URL = 'https://demo-fn.avanpos.com/fn';
     const CACHE_ID = 'MODULPOS_CASHBOX_ID';
     const CACHE_EXPIRE_TIME = 31536000;
 		
 	public static function log($log_entry, $log_file="/var/log/php/modulpos.cashbox.log") {
 		// Uncomment line bellow to enable debuging of module
-		// file_put_contents($log_file, "\n".date('Y-m-d H:i:sP').' : '.$log_entry, FILE_APPEND);
+		file_put_contents($log_file, "\n".date('Y-m-d H:i:sP').' : '.$log_entry, FILE_APPEND);
 	}
 	
 	public static function getModulCashboxId() {
@@ -67,6 +67,10 @@ class CashboxModul extends Cashbox {
             'http' => array(
                 'header' => $headers_string,
                 'method' => $method                
+            ),
+            'https' => array(
+                'header' => $headers_string,
+                'method' => $method                
             )
         );
         if ($method == 'POST' && $data != '') {
@@ -82,32 +86,39 @@ class CashboxModul extends Cashbox {
         static::log("\nResponse:\n".var_export($response, true));
         return json_decode($response, true);
     }
+
+    public static function isAssociated() {
+        return Option::get(MODULE_NAME, 'associated_login', '#empty#') !== '#empty#';
+    }
+
+    public static function createAssociation($retailpoint_id, $login, $password) {
+        $response = static::sendHttpRequest('/v1/associate/'.$retailpoint_id, 'POST', array('username'=>$login, 'password' => $password ));
+        if ($response !== false) {
+            $associated_login = $response['userName'];
+            $associated_password = $response['password'];
+            Option::set(MODULE_NAME, 'associated_login', $associated_login);
+            Option::set(MODULE_NAME, 'associated_password', $associated_password);
+            return array(
+                'success' => TRUE,
+                'data' => array(
+                    'associated_login' => $associated_login,
+                    'associated_password' => $associated_password
+                )
+            );
+        } else {
+            return array(
+                'success' => FALSE,
+                'error' => error_get_last()['message']
+            );
+        }
+    }
+
     private static function getAssociationData() {
         $associated_login =  Option::get(MODULE_NAME, 'associated_login', '#empty#');
+        $associated_password = Option::get(MODULE_NAME, 'associated_password', '');
         if ($associated_login == '#empty#') {
-            $login =  Option::get(MODULE_NAME, 'login', '#empty#');
-            if ($login != '#empty#') {
-                $password =  Option::get(MODULE_NAME, 'password', '');
-                $retailpoint_id = Option::get(MODULE_NAME, 'retailpoint_id', '');
-                $response = static::sendHttpRequest('/v1/associate/'.$retailpoint_id, 'POST', array('username'=>$login, 'password' => $password ));
-                if ($response !== false) {
-                    $associated_login = $response['userName'];
-                    $associated_password = $response['password'];
-                    Option::set(MODULE_NAME, 'associated_login', $associated_login);
-                    Option::set(MODULE_NAME, 'associated_password', $associated_password);
-                    return array(
-                        'username' => $associated_login,
-                        'password' => $associated_password
-                    );
-                } else {
-                    // TODO Show error message about not filled options
-                }
-            } else {
-                // TODO Show error message about not filled options
-            }
+            return false;
         } else {
-            $associated_password = Option::get(MODULE_NAME, 'associated_password', '');
-            static::log("Use stored association data: $associated_login , $associated_password");
             return array(
                 'username' => $associated_login,
                 'password' => $associated_password
@@ -119,17 +130,21 @@ class CashboxModul extends Cashbox {
         return Loc::getMessage('CASHBOX_MODULPOS_NAME');
     }
 
-    public static function enqueCheck($check) {         
+    public static function enqueCheck($check) {
         static::log('enqueueCheck called!'.var_export($check->getDataForCheck(), TRUE));
         $document = static::createDocuemntByCheck($check->getDataForCheck());
         static::log('Modulpos document: '.var_export($document, TRUE));
         $document_as_json = json_encode($document, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         static::log('Modulpos document (JSON):'.var_export($document_as_json, TRUE));
         $credentials = static::getAssociationData();
-        $response = static::sendHttpRequest('/v1/doc', 'POST', $credentials, $document_as_json);
-        if ($response === FALSE) {
-            // Just log for now, check will be retrieved in next time by FN Service
-            static::log('Error enqueuing check:'.var_export(error_get_last(), TRUE));            
+        if ($credentials !== FALSE) {
+            $response = static::sendHttpRequest('/v1/doc', 'POST', $credentials, $document_as_json);
+            if ($response === FALSE) {
+                // Just log for now, check will be retrieved in next time by FN Service
+                static::log('Error enqueuing check:'.var_export(error_get_last(), TRUE));            
+            }
+        } else {
+            static::log('ERROR: CashboxModul module not configured. Print checks on this cashbox is disabled');
         }
     }
 
@@ -178,19 +193,19 @@ class CashboxModul extends Cashbox {
     }
 
     /* TODO Make cacheable with invalidation on options save */
-    private static function createValidationToken() {
+    private static function createValidationToken($document_number) {
         $associationData = static::getAssociationData();
-        return md5($associationData['username'].'$'.$associationData['password']);    
+        return md5($associationData['username'].'$'.$associationData['password'].'$'.$document_number);
     }
 
-    public static function validateToken($token) {
+    public static function validateToken($token, $document_number) {
         if (!$token) {
             return FALSE;
         }
-        return trim($token) == static::createValidationToken();
+        return trim($token) == static::createValidationToken($document_number);
     }
 
-    public static function getConnectionLink($handler_file)  {
+    public static function getConnectionLink($handler_file, $document_number = "")  {
         $context = Main\Application::getInstance()->getContext();
         $scheme = $context->getRequest()->isHttps() ? 'https' : 'http';
         $server = $context->getServer();
@@ -206,7 +221,7 @@ class CashboxModul extends Cashbox {
                 $port = $server->getServerPort();
         }
         $port = in_array($port, array(80, 443)) ? '' : ':'.$port;
-        $token = static::createValidationToken();
+        $token = static::createValidationToken($document_number);
         return sprintf('%s://%s%s/bitrix/tools/%s?token=%s', $scheme, $domain, $port, $handler_file, $token);
     }    
 

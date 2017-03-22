@@ -1,9 +1,15 @@
 <?php
 
+defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
+CModule::IncludeModule(MODULE_NAME);
+CModule::IncludeModule("sale");
+
 use Bitrix\Main\Application;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Text\HtmlFilter;
+use Modulpos\Cashbox\CashboxModul;
+
 
 defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
 
@@ -17,6 +23,7 @@ $request = $context->getRequest();
 
 Loc::loadMessages($context->getServer()->getDocumentRoot()."/bitrix/modules/main/options.php");
 Loc::loadMessages(__FILE__);
+
 
 $tabControl = new CAdminTabControl("tabControl", array(
     array(
@@ -40,12 +47,14 @@ if ((!empty($save) || !empty($restore)) && $request->isPost() && check_bitrix_se
       $retailpoint_id = $request->getPost('retailpoint_id');
       $validated = true; // TODO validate values
       if ($validated) {
-        Option::set(MODULE_NAME, "login", $login);
-        Option::set(MODULE_NAME, "password", $password);
-        Option::set(MODULE_NAME, "retailpoint_id", $retailpoint_id);
-        Option::set(MODULE_NAME, 'associated_login', '#empty#'); // TODO Make real association here and store it in properties
-        Option::set(MODULE_NAME, 'associated_password', '#empty#');
-        CAdminMessage::showMessage(array("MESSAGE" => Loc::getMessage("REFERENCES_OPTIONS_SAVED"),"TYPE" => "OK"));
+            $res = CashboxModul::createAssociation($retailpoint_id, $login, $password);
+            if ($res['success'] === TRUE) {
+                Option::set(MODULE_NAME, 'associated_login', $res['data']['associated_login']); 
+                Option::set(MODULE_NAME, 'associated_password', $res['data']['associated_password']);
+                CAdminMessage::showMessage(array("MESSAGE" => Loc::getMessage("MODULPOS_ASSOCIATION_CREATED"),"TYPE" => "OK"));
+            } else {
+                CAdminMessage::showMessage(array("MESSAGE" => Loc::getMessage("MODULPOS_ERROR_CREATING_ASSOC").':'.$res['error'],"TYPE" => "ERROR"));
+            }
       } else {
         CAdminMessage::showMessage(Loc::getMessage("REFERENCES_INVALID_VALUE"));
       }
@@ -61,6 +70,8 @@ $tabControl->begin();
     echo bitrix_sessid_post();
     $tabControl->beginNextTab();
     ?>
+    <?  if (!CashboxModul::isAssociated()):  ?>
+
     <tr>
         <td width="40%">
             <label for="login"><?=Loc::getMessage("REFERENCES_MODULPOS_LOGIN") ?>:</label>
@@ -94,8 +105,9 @@ $tabControl->begin();
                    maxlength="50"
                    name="retailpoint_id"
                    value="<?=HtmlFilter::encode(Option::get(MODULE_NAME, 'retailpoint_id', ''));?>"
-                   />
-        </td>
+                   /><br/>
+            <span><?=Loc::getMessage("MODULPOS_CASHBOX_WHERE_IS_RETAIL_POINT_ID") ?></span>
+        </td>        
     </tr>
 
     <?php
@@ -110,4 +122,20 @@ $tabControl->begin();
     <?php
     $tabControl->end();
     ?>
+
+    <? else: ?>
+    <span><?=Loc::getMessage("MODULPOS_ASSOCIATED_SUCCESSFULY") ?></span>
+    <?php
+    $tabControl->buttons();
+    ?>    
+            <input type="submit"
+                name="restore"
+                value="<?=Loc::getMessage("MODULPOS_DELETE_ASSOCIATION") ?>"
+                title="<?=Loc::getMessage("MODULPOS_DELETE_ASSOCIATION") ?>"
+                class="adm-btn-save"
+                />
+            
+   
+    <? endif; ?>
+
 </form>

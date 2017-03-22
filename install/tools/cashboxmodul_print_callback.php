@@ -18,7 +18,7 @@ if (!CModule::IncludeModule(MODULE_NAME))
 
 $request = Main\Application::getInstance()->getContext()->getRequest();
 
-if (!CashboxModul::validateToken($request->get('token')))
+if (!CashboxModul::validateToken($request->get('token'), $request->get('docId')))
 {
 	CHTTP::SetStatus("403 Forbidden");
 	$APPLICATION->FinalActions();
