@@ -16,7 +16,8 @@ Loc::loadMessages(__FILE__);
 
 
 class CashboxModul extends Cashbox {	
-	const FN_BASE_URL = 'https://demo-fn.avanpos.com/fn';
+//	const FN_BASE_URL = 'https://demo-fn.avanpos.com/fn';
+	const FN_BASE_URL = 'https://service.modulpos.ru/api/fn';
     const CACHE_ID = 'MODULPOS_CASHBOX_ID';
     const CACHE_EXPIRE_TIME = 31536000;
 		
@@ -172,13 +173,14 @@ class CashboxModul extends Cashbox {
     }
 
 	private static function createDocuemntByCheck($checkData) {
+        $docId = $checkData['unique_id'];
 		$document = array(
 		           'id' => $checkData['unique_id'],
 		           'checkoutDateTime' => $checkData['date_create']->format(DATE_ATOM),
-		           'docNum' => $checkData['unique_id'],
+		           'docNum' => $docId,
 		           'docType' => $checkData['type'] == 'sell' || $checkData['type'] == 'sellorder' ? 'SALE' : 'RETURN',
 		           'email' => $checkData['client_email'],
-                   'responseURL' => static::getConnectionLink('cashboxmodul_print_callback.php').'&docId='.$checkData['unique_id']
+                   'responseURL' => static::getConnectionLink('cashboxmodul_print_callback.php', $docId).'&docId='.$docId
 		        );
 		
 		$inventPositions = array();
