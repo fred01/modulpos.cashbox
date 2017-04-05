@@ -15,6 +15,6 @@ mv -f "$builddir/lang/ru/install/index.php.cp1251" "$builddir/lang/ru/install/in
 mv -f "$builddir/lang/ru/lib/cashboxmodul.php.cp1251" "$builddir/lang/ru/lib/cashboxmodul.php"
 
 pushd "$tmpdir" # .last_version should be in archive
-rm ~/tmp/last_version.zip
-zip -r ~/tmp/last_version.zip .last_version
+rm ~/tmp/modulpos.cashbox/last_version.zip
+zip -r ~/tmp/modulpos.cashbox/last_version.zip .last_version
 popd
