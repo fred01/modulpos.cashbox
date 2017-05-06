@@ -28,6 +28,10 @@ if (!CashboxModul::validateToken($request->get('token'), $request->get('docId'))
 $printedDocId = $request->get('docId');
 $qrCode = urldecode($request->get('qr'));
 
+CashboxModul::log("Callback called, docId=$printedDocId qr=$qrCode");
+
+
+
 $dbRes = CashboxCheckTable::getList(array('select' => array('STATUS'), 'filter' => array('ID' => $printedDocId)));
 $data = $dbRes->fetch();
 if ($data)
