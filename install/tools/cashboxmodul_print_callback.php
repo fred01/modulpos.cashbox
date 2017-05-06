@@ -26,7 +26,7 @@ if (!CashboxModul::validateToken($request->get('token'), $request->get('docId'))
 }
 
 $printedDocId = $request->get('docId');
-$qrCode = $request->get('qr');
+$qrCode = urldecode($request->get('qr'));
 
 $dbRes = CashboxCheckTable::getList(array('select' => array('STATUS'), 'filter' => array('ID' => $printedDocId)));
 $data = $dbRes->fetch();
