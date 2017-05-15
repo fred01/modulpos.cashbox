@@ -12,5 +12,8 @@ $MESS['MODULPOS_ERROR_CREATING_ASSOC'] = "Ошибка соединения с �
 $MESS['MODULPOS_ASSOCIATED_SUCCESSFULY'] = 'Интернет-магазин связан с розничной точкой';
 $MESS['MODULPOS_DELETE_ASSOCIATION'] = 'Удалить связь';
 $MESS['REFERENCES_OPTIONS_RESTORED'] = "Связь Битрикс с Модуль.Касса удалена";
+$MESS['REFERENCES_OPERATING_MODE'] = "Режим работы";
+$MESS['REFERENCES_OPERATING_MODE_DEMO'] = "Демо";
+$MESS['REFERENCES_OPERATING_MODE_PRODUCTION'] = "Рабочий";
 
 ?>

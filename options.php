@@ -45,9 +45,10 @@ if ((!empty($save) || !empty($restore)) && $request->isPost() && check_bitrix_se
       $login = $request->getPost('login');
       $password = $request->getPost('password');
       $retailpoint_id = $request->getPost('retailpoint_id');
+      $operating_mode = $request->getPost('operating_mode');      
       $validated = true; // TODO validate values
       if ($validated) {
-            $res = CashboxModul::createAssociation($retailpoint_id, $login, $password);
+            $res = CashboxModul::createAssociation($retailpoint_id, $login, $password, $operating_mode);
             if ($res['success'] === TRUE) {
                 Option::set(MODULE_NAME, 'associated_login', $res['data']['associated_login']); 
                 Option::set(MODULE_NAME, 'associated_password', $res['data']['associated_password']);
@@ -108,6 +109,17 @@ $tabControl->begin();
                    /><br/>
             <span><?=Loc::getMessage("MODULPOS_CASHBOX_WHERE_IS_RETAIL_POINT_ID") ?></span>
         </td>        
+    </tr>
+    <tr>
+        <td width="40%">
+          <label for="operating_mode"><?=Loc::getMessage("REFERENCES_OPERATING_MODE") ?>:</label>
+        </td>
+        <td width="60%">
+          <select name="operating_mode">
+            <option value="demo" selected=""><?=Loc::getMessage("REFERENCES_OPERATING_MODE_DEMO")?></option>
+            <option value="production"><?=Loc::getMessage("REFERENCES_OPERATING_MODE_PRODUCTION")?></option>
+          </select>
+        </td>
     </tr>
 
     <?php

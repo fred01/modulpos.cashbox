@@ -50,7 +50,7 @@ class CashboxModul extends Cashbox {
 		return $id;
 	}
 		
-    private static function sendHttpRequest($url, $method, $auth_data, $data = '') {
+    private static function sendHttpRequest($url, $method, $auth_data, $fn_base_url, $data = '') {
         $encoded_auth =  base64_encode($auth_data['username'].':'.$auth_data['password']);
         static::log("sendHttpRequest called:".$url.','.$method.','.$encoded_auth);
         $headers = array(
@@ -78,8 +78,8 @@ class CashboxModul extends Cashbox {
             $options['http']['content'] = $data;
         }
         $context  = stream_context_create($options);
-        static::log("Request: ".$method.' '.static::FN_BASE_URL.$url."\n$headers_string\n".$data);
-        $response = file_get_contents(static::FN_BASE_URL.$url, false, $context);
+        static::log("Request: ".$method.' '.$fn_base_url.$url."\n$headers_string\n".$data);
+        $response = file_get_contents($fn_base_url.$url, false, $context);
         if ($response === false) { 
             static::log("Error:".var_export(error_get_last(), true));
             return false;
@@ -92,11 +92,13 @@ class CashboxModul extends Cashbox {
         return Option::get(MODULE_NAME, 'associated_login', '#empty#') !== '#empty#';
     }
 
-    public static function createAssociation($retailpoint_id, $login, $password) {
-        $response = static::sendHttpRequest('/v1/associate/'.$retailpoint_id, 'POST', array('username'=>$login, 'password' => $password ));
+    public static function createAssociation($retailpoint_id, $login, $password, $operating_mode) {
+        $fn_base_url = static::getFnBaseUrlByMode($operating_mode);
+        $response = static::sendHttpRequest('/v1/associate/'.$retailpoint_id, 'POST', array('username'=>$login, 'password' => $password ), $fn_base_url);
         if ($response !== false) {
             $associated_login = $response['userName'];
             $associated_password = $response['password'];
+            $operating_mode = $response['operating_mode'];
             $retail_point_info = '';
             if ($response['name']) {
                 $retail_point_info .= $response['name'];
@@ -108,6 +110,7 @@ class CashboxModul extends Cashbox {
             Option::set(MODULE_NAME, 'associated_login', $associated_login);
             Option::set(MODULE_NAME, 'associated_password', $associated_password);
             Option::set(MODULE_NAME, 'retail_point_info', $retail_point_info);
+            Option::set(MODULE_NAME, 'operating_mode', $operating_mode);
             return array(
                 'success' => TRUE,
                 'data' => array(
@@ -126,7 +129,8 @@ class CashboxModul extends Cashbox {
     public static function removeCurrentAssociation() {
         $credentials = static::getAssociationData();
         if ($credentials !== FALSE) {
-            $response = static::sendHttpRequest('/associate', 'DELETE', $credentials);
+            $fn_base_url = getFnBaseUrl();
+            $response = static::sendHttpRequest('/associate', 'DELETE', $credentials, $fn_base_url);
             if ($response === FALSE) {
                 // Actually doesn't matter'
                 static::log('Error deleting association:'.var_export(error_get_last(), TRUE));
@@ -135,6 +139,19 @@ class CashboxModul extends Cashbox {
             static::log('ERROR: CashboxModul module not configured. Can not remove association');
         }
         
+    }
+
+    private static function getFnBaseUrl() {
+        $operating_mode =  Option::get(MODULE_NAME, 'operating_mode', 'demo');
+        return getFnBaseUrlByMode($operating_mode);
+    }
+
+    private static function getFnBaseUrlByMode($operating_mode) {
+        if ($operating_mode == 'production') {
+            return 'https://service.modulpos.ru/api/fn';
+        } else {
+            return 'https://demo-fn.avanpos.com/fn';
+        }
     }
 
     private static function getAssociationData() {
@@ -162,7 +179,8 @@ class CashboxModul extends Cashbox {
         static::log('Modulpos document (JSON):'.var_export($document_as_json, TRUE));
         $credentials = static::getAssociationData();
         if ($credentials !== FALSE) {
-            $response = static::sendHttpRequest('/v1/doc', 'POST', $credentials, $document_as_json);
+            $fn_base_url = getFnBaseUrl();
+            $response = static::sendHttpRequest('/v1/doc', 'POST', $credentials, $fn_base_url, $document_as_json);
             if ($response === FALSE) {
                 // Just log for now, check will be retrieved in next time by FN Service
                 static::log('Error enqueuing check:'.var_export(error_get_last(), TRUE));            
