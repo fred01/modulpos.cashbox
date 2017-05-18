@@ -220,12 +220,33 @@ class CashboxModul extends Cashbox {
 		$position = array(            
 		           'description' => '',
 		           'name' => $item['name'],
-		           'price' => $item['price'],
+		           'price' => static::createPriceByCheckItem($item),
 		           'quantity' => $item['quantity'],
-		           'vatTag' => $item['vat']
+		           'vatTag' => $item['vat'],
+                   'discSum' => static::createDiscountByCheckItem($item)
 		        );
 		return $position;
 	}
+
+    private static function createPriceByCheckItem($item) {
+        $base_price = $item['base_price'];
+        if($base_price == null ) {
+            $discount = static::createDiscountByCheckItem($item);
+            return doubleval($item['price']) - $discount;
+        } else {
+            return $item['price'];
+        }
+
+    }
+
+    private static function createDiscountByCheckItem($item) {
+        $discount = $item['discount']['discount'];
+        if($discount != null ) {
+            return doubleval($discount);
+        } else {
+            return 0;
+        }
+    }
 	
 	private static function createMoneyPositionByCheckPayment($paymentItem) {
 		$position = array(
