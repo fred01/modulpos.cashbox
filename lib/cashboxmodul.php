@@ -142,15 +142,15 @@ class CashboxModul extends Cashbox {
     }
 
     private static function getFnBaseUrl() {
-        $operating_mode =  Option::get(MODULE_NAME, 'operating_mode', 'demo');
+        $operating_mode =  Option::get(MODULE_NAME, 'operating_mode', 'production');
         return getFnBaseUrlByMode($operating_mode);
     }
 
     private static function getFnBaseUrlByMode($operating_mode) {
-        if ($operating_mode == 'production') {
-            return 'https://service.modulpos.ru/api/fn';
-        } else {
+        if ($operating_mode == 'demo') {
             return 'https://demo-fn.avanpos.com/fn';
+        } else {
+            return 'https://service.modulpos.ru/api/fn';
         }
     }
 
