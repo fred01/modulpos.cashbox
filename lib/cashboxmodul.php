@@ -129,7 +129,7 @@ class CashboxModul extends Cashbox {
     public static function removeCurrentAssociation() {
         $credentials = static::getAssociationData();
         if ($credentials !== FALSE) {
-            $fn_base_url = getFnBaseUrl();
+            $fn_base_url = static::getFnBaseUrl();
             $response = static::sendHttpRequest('/associate', 'DELETE', $credentials, $fn_base_url);
             if ($response === FALSE) {
                 // Actually doesn't matter'
@@ -143,7 +143,7 @@ class CashboxModul extends Cashbox {
 
     private static function getFnBaseUrl() {
         $operating_mode =  Option::get(MODULE_NAME, 'operating_mode', 'production');
-        return getFnBaseUrlByMode($operating_mode);
+        return static::getFnBaseUrlByMode($operating_mode);
     }
 
     private static function getFnBaseUrlByMode($operating_mode) {
@@ -179,7 +179,7 @@ class CashboxModul extends Cashbox {
         static::log('Modulpos document (JSON):'.var_export($document_as_json, TRUE));
         $credentials = static::getAssociationData();
         if ($credentials !== FALSE) {
-            $fn_base_url = getFnBaseUrl();
+            $fn_base_url = static::getFnBaseUrl();
             $response = static::sendHttpRequest('/v1/doc', 'POST', $credentials, $fn_base_url, $document_as_json);
             if ($response === FALSE) {
                 // Just log for now, check will be retrieved in next time by FN Service
