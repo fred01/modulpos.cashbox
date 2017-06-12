@@ -223,7 +223,7 @@ class CashboxModul extends Cashbox {
 		           'price' => static::createPriceByCheckItem($item),
 		           'quantity' => $item['quantity'],
 		           'vatTag' => $item['vat'],
-                   'discSum' => static::createDiscountByCheckItem($item)
+                   'discSum' => 0
 		        );
 		return $position;
 	}
