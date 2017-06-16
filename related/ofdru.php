@@ -17,12 +17,12 @@ class OfdRu extends Ofd
 	 * @return string
 	 */
 	public function generateCheckLink($data)
-	{
-		$url = static::ACTIVE_URL;
-		parse_str($data['qr'], $qr);
+    {
+        $url = static::ACTIVE_URL;
+        parse_str($data, $qr);
 
-		return $url.$data['inn'].'/'.$data['number_kkm'].'/'.$qr['fn'].'/'.$qr['i'].'/'.$qr['fp'];
-	}
+        return $url.'7810498732'.'/'.'0000321027056631'.'/'.$qr['fn'].'/'.$qr['i'].'/'.$qr['fp'];
+    }
 
 	/**
 	 * @throws Main\NotImplementedException
