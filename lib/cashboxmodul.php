@@ -16,8 +16,6 @@ Loc::loadMessages(__FILE__);
 
 
 class CashboxModul extends Cashbox {	
-//	const FN_BASE_URL = 'https://demo-fn.avanpos.com/fn';
-	const FN_BASE_URL = 'https://service.modulpos.ru/api/fn';
     const CACHE_ID = 'MODULPOS_CASHBOX_ID';
     const CACHE_EXPIRE_TIME = 31536000;
 		
@@ -217,12 +215,19 @@ class CashboxModul extends Cashbox {
 	}
 
 	private static function createItemPositionByCheckItem($item) {
-		$position = array(            
+//        1104 - "НДС 0%",
+//        1103 - "НДС 10%",
+//        1102 - "НДС 18%",
+//        1105 - "НДС не облагается",
+//        1107 - "НДС с рассч. ставкой 10%",
+//        1106 - "НДС с рассч. ставкой 18%",
+
+		$position = array(
 		           'description' => '',
 		           'name' => $item['name'],
 		           'price' => static::createPriceByCheckItem($item),
 		           'quantity' => $item['quantity'],
-		           'vatTag' => $item['vat'],
+		           'vatTag' => 1104, // Without VAT. TODO Make configurable
                    'discSum' => 0
 		        );
 		return $position;
