@@ -1,3 +1,3 @@
 <?php
-  $MESS['CASHBOX_MODULPOS_NAME'] = 'Модуль.Касса';
+  $MESS['CASHBOX_MODULPOS_NAME'] = 'МодульКасса';
 ?>

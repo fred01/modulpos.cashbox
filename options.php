@@ -1,7 +1,7 @@
 <?php
 
-defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
-CModule::IncludeModule(MODULE_NAME);
+defined('MODULE_CASHBOX_NAME') or define('MODULE_CASHBOX_NAME', 'modulpos.cashbox');
+CModule::IncludeModule(MODULE_CASHBOX_NAME);
 CModule::IncludeModule("sale");
 
 use Bitrix\Main\Application;
@@ -10,8 +10,6 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Text\HtmlFilter;
 use Modulpos\Cashbox\CashboxModul;
 
-
-defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
 
 if (!$USER->isAdmin()) {
     $APPLICATION->authForm('Nope');
@@ -35,7 +33,7 @@ $tabControl = new CAdminTabControl("tabControl", array(
 
 if ((!empty($save) || !empty($restore)) && $request->isPost() && check_bitrix_sessid()) {
   if (!empty($restore)) {
-    Option::delete(MODULE_NAME);
+    Option::delete(MODULE_CASHBOX_NAME);
     CAdminMessage::showMessage(array(
       "MESSAGE" => Loc::getMessage("REFERENCES_OPTIONS_RESTORED"),
       "TYPE" => "OK",
@@ -50,8 +48,8 @@ if ((!empty($save) || !empty($restore)) && $request->isPost() && check_bitrix_se
       if ($validated) {
             $res = CashboxModul::createAssociation($retailpoint_id, $login, $password, $operating_mode);
             if ($res['success'] === TRUE) {
-                Option::set(MODULE_NAME, 'associated_login', $res['data']['associated_login']); 
-                Option::set(MODULE_NAME, 'associated_password', $res['data']['associated_password']);
+                Option::set(MODULE_CASHBOX_NAME, 'associated_login', $res['data']['associated_login']);
+                Option::set(MODULE_CASHBOX_NAME, 'associated_password', $res['data']['associated_password']);
                 CAdminMessage::showMessage(array("MESSAGE" => Loc::getMessage("MODULPOS_ASSOCIATION_CREATED"),"TYPE" => "OK"));
             } else {
                 CAdminMessage::showMessage(array("MESSAGE" => Loc::getMessage("MODULPOS_ERROR_CREATING_ASSOC").':'.$res['error'],"TYPE" => "ERROR"));
@@ -81,7 +79,7 @@ $tabControl->begin();
                    size="50"
                    maxlength="50"
                    name="login"
-                   value="<?=HtmlFilter::encode(Option::get(MODULE_NAME, "login", ''));?>"
+                   value="<?=HtmlFilter::encode(Option::get(MODULE_CASHBOX_NAME, "login", ''));?>"
                    />
         </td>
     </tr>
@@ -93,7 +91,7 @@ $tabControl->begin();
                    size="50"
                    maxlength="50"
                    name="password"
-                   value="<?=HtmlFilter::encode(Option::get(MODULE_NAME, "password", ''));?>"
+                   value="<?=HtmlFilter::encode(Option::get(MODULE_CASHBOX_NAME, "password", ''));?>"
                    />
         </td>
     </tr>
@@ -105,7 +103,7 @@ $tabControl->begin();
                    size="50"
                    maxlength="50"
                    name="retailpoint_id"
-                   value="<?=HtmlFilter::encode(Option::get(MODULE_NAME, 'retailpoint_id', ''));?>"
+                   value="<?=HtmlFilter::encode(Option::get(MODULE_CASHBOX_NAME, 'retailpoint_id', ''));?>"
                    /><br/>
             <span><?=Loc::getMessage("MODULPOS_CASHBOX_WHERE_IS_RETAIL_POINT_ID") ?></span>
         </td>        
@@ -136,7 +134,12 @@ $tabControl->begin();
     ?>
 
     <? else: ?>
-    <span><?=Loc::getMessage("MODULPOS_ASSOCIATED_SUCCESSFULY").' '.Option::get(MODULE_NAME, 'retail_point_info', '')?></span>
+    <span><?
+        $retailPointInfo = Option::get(MODULE_CASHBOX_NAME, 'retail_point_info', '');
+
+        echo Loc::getMessage("MODULPOS_ASSOCIATED_SUCCESSFULY").' '.$retailPointInfo;
+        ?>
+    </span>
     <?php
     $tabControl->buttons();
     ?>    

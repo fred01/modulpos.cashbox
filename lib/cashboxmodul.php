@@ -9,7 +9,7 @@ use Bitrix\Sale\Cashbox\Check;
 use Bitrix\Sale\Cashbox\Internals\CashboxTable;
 use Bitrix\Main\Localization\Loc;
 
-defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
+defined('MODULE_CASHBOX_NAME') or define('MODULE_CASHBOX_NAME', 'modulpos.cashbox');
 
 Loc::loadMessages(__FILE__);
 
@@ -19,8 +19,12 @@ class CashboxModul extends Cashbox {
     const CACHE_ID = 'MODULPOS_CASHBOX_ID';
     const CACHE_EXPIRE_TIME = 31536000;
 		
-	public static function log($log_entry, $log_file="/var/log/php/modulpos.cashbox.log") {
-		// Uncomment line bellow to enable debuging of module
+	public static function log($log_entry, $log_file = null) {
+	    if ($log_file == null) {
+            $log_file = $_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT.'/tmp/modulpos.logs/modulpos.cashbox.log';
+            CheckDirPath($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT.'/tmp/modulpos.logs/');
+        }
+
 		file_put_contents($log_file, "\n".date('Y-m-d H:i:sP').' : '.$log_entry, FILE_APPEND);
 	}
 	
@@ -87,7 +91,7 @@ class CashboxModul extends Cashbox {
     }
 
     public static function isAssociated() {
-        return Option::get(MODULE_NAME, 'associated_login', '#empty#') !== '#empty#';
+        return Option::get(MODULE_CASHBOX_NAME, 'associated_login', '#empty#') !== '#empty#';
     }
 
     public static function createAssociation($retailpoint_id, $login, $password, $operating_mode) {
@@ -104,11 +108,17 @@ class CashboxModul extends Cashbox {
             if ($response['address']) {
                 $retail_point_info .= ' '.$response['address'];
             }
-             
-            Option::set(MODULE_NAME, 'associated_login', $associated_login);
-            Option::set(MODULE_NAME, 'associated_password', $associated_password);
-            Option::set(MODULE_NAME, 'retail_point_info', $retail_point_info);
-            Option::set(MODULE_NAME, 'operating_mode', $operating_mode);
+
+            $isCp1251 = (SITE_CHARSET == 'windows-1251');
+            if ($isCp1251) {
+                $retail_point_info = mb_convert_encoding($retail_point_info, "windows-1251", "utf-8");
+            }
+
+
+            Option::set(MODULE_CASHBOX_NAME, 'associated_login', $associated_login);
+            Option::set(MODULE_CASHBOX_NAME, 'associated_password', $associated_password);
+            Option::set(MODULE_CASHBOX_NAME, 'retail_point_info', $retail_point_info);
+            Option::set(MODULE_CASHBOX_NAME, 'operating_mode', $operating_mode);
             return array(
                 'success' => TRUE,
                 'data' => array(
@@ -140,7 +150,7 @@ class CashboxModul extends Cashbox {
     }
 
     private static function getFnBaseUrl() {
-        $operating_mode =  Option::get(MODULE_NAME, 'operating_mode', 'production');
+        $operating_mode =  Option::get(MODULE_CASHBOX_NAME, 'operating_mode', 'production');
         return static::getFnBaseUrlByMode($operating_mode);
     }
 
@@ -153,8 +163,8 @@ class CashboxModul extends Cashbox {
     }
 
     private static function getAssociationData() {
-        $associated_login =  Option::get(MODULE_NAME, 'associated_login', '#empty#');
-        $associated_password = Option::get(MODULE_NAME, 'associated_password', '');
+        $associated_login =  Option::get(MODULE_CASHBOX_NAME, 'associated_login', '#empty#');
+        $associated_password = Option::get(MODULE_CASHBOX_NAME, 'associated_password', '');
         if ($associated_login == '#empty#') {
             return false;
         } else {
@@ -222,9 +232,15 @@ class CashboxModul extends Cashbox {
 //        1107 - "НДС с рассч. ставкой 10%",
 //        1106 - "НДС с рассч. ставкой 18%",
 
+        $itemName = $item['name'];
+        if (SITE_CHARSET == 'windows-1251') {
+            $itemName = mb_convert_encoding($itemName, "utf-8", "windows-1251");
+        }
+
+
 		$position = array(
 		           'description' => '',
-		           'name' => $item['name'],
+		           'name' => $itemName,
 		           'price' => static::createPriceByCheckItem($item),
 		           'quantity' => $item['quantity'],
 		           'vatTag' => 1104, // Without VAT. TODO Make configurable
@@ -245,9 +261,13 @@ class CashboxModul extends Cashbox {
     }
 
     private static function createDiscountByCheckItem($item) {
-        $discount = $item['discount']['discount'];
-        if($discount != null ) {
-            return doubleval($discount);
+        if (array_key_exists('discount', $item) && array_key_exists('discount', $item['discount']) ) {
+            $discount = $item['discount']['discount'];
+            if($discount != null ) {
+                return doubleval($discount);
+            } else {
+                return 0;
+            }
         } else {
             return 0;
         }
