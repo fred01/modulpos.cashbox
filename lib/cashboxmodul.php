@@ -16,9 +16,7 @@ Loc::loadMessages(__FILE__);
 
 
 class CashboxModul extends Cashbox {	
-    const CACHE_ID = 'MODULPOS_CASHBOX_ID';
-    const CACHE_EXPIRE_TIME = 31536000;
-		
+
 	public static function log($log_entry, $log_file = null) {
 	    if ($log_file == null) {
             $log_file = $_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT.'/tmp/modulpos.logs/modulpos.cashbox.log';
@@ -29,12 +27,14 @@ class CashboxModul extends Cashbox {
 	}
 	
 	public static function getModulCashboxId() {
+        $CACHE_ID = 'MODULPOS_CASHBOX_ID';
+        $CACHE_EXPIRE_TIME = 31536000;
 
 		$id = 0;
 		$cacheManager = Main\Application::getInstance()->getManagedCache();
 		
-		if ($cacheManager->read(CACHE_EXPIRE_TIME, CACHE_ID)) {
-			$id = $cacheManager->get(CACHE_ID);
+		if ($cacheManager->read($CACHE_EXPIRE_TIME, $CACHE_ID)) {
+			$id = $cacheManager->get($CACHE_ID);
 		}
 		
 		if ($id <= 0) {
@@ -225,25 +225,19 @@ class CashboxModul extends Cashbox {
 	}
 
 	private static function createItemPositionByCheckItem($item) {
-//        1104 - "НДС 0%",
-//        1103 - "НДС 10%",
-//        1102 - "НДС 18%",
-//        1105 - "НДС не облагается",
-//        1107 - "НДС с рассч. ставкой 10%",
-//        1106 - "НДС с рассч. ставкой 18%",
-
         $itemName = $item['name'];
         if (SITE_CHARSET == 'windows-1251') {
             $itemName = mb_convert_encoding($itemName, "utf-8", "windows-1251");
         }
 
+        $vatTag = Option::get(MODULE_CASHBOX_NAME, "default_vat_tag", '1105');
 
 		$position = array(
 		           'description' => '',
 		           'name' => $itemName,
 		           'price' => static::createPriceByCheckItem($item),
 		           'quantity' => $item['quantity'],
-		           'vatTag' => 1104, // Without VAT. TODO Make configurable
+		           'vatTag' => intval($vatTag),
                    'discSum' => 0
 		        );
 		return $position;

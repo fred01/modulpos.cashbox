@@ -58,6 +58,10 @@ if ((!empty($save) || !empty($restore)) && $request->isPost() && check_bitrix_se
         CAdminMessage::showMessage(Loc::getMessage("REFERENCES_INVALID_VALUE"));
       }
     }
+    if ($request->getPost('default_vat_tag')) {
+        Option::set(MODULE_CASHBOX_NAME, 'default_vat_tag', $request->getPost('default_vat_tag'));
+        CAdminMessage::showMessage(array("MESSAGE" => "Настройки успешно сохранены","TYPE" => "OK"));
+    }
   }
 }
 
@@ -114,11 +118,53 @@ $tabControl->begin();
         </td>
         <td width="60%">
           <select name="operating_mode">
-            <option value="demo" selected=""><?=Loc::getMessage("REFERENCES_OPERATING_MODE_DEMO")?></option>
-            <option value="production"><?=Loc::getMessage("REFERENCES_OPERATING_MODE_PRODUCTION")?></option>
+            <option value="demo"><?=Loc::getMessage("REFERENCES_OPERATING_MODE_DEMO")?></option>
+            <option value="production" selected><?=Loc::getMessage("REFERENCES_OPERATING_MODE_PRODUCTION")?></option>
           </select>
         </td>
     </tr>
+
+    <? else: ?>
+    <tr>
+        <td width="40%">
+            <?=Loc::getMessage("MODULPOS_ASSOCIATED_SUCCESSFULY").'<br>'.Option::get(MODULE_CASHBOX_NAME, 'retail_point_info', '') ?>
+        </td>
+        <td width="60%">
+            <input type="submit"
+                   name="restore"
+                   value="<?=Loc::getMessage("MODULPOS_DELETE_ASSOCIATION") ?>"
+                   title="<?=Loc::getMessage("MODULPOS_DELETE_ASSOCIATION") ?>"
+                   class="adm-btn-save"
+            />
+        </td>
+    </tr>
+    <? endif; ?>
+
+    <tr>
+        <td width="40%">
+            Ставка НДС:
+        </td>
+        <td width="60%">
+            <? $defaultVatTag = Option::get(MODULE_CASHBOX_NAME, 'default_vat_tag', '1105') ?>
+            <select name="default_vat_tag">
+
+                //        1104 - "НДС 0%",
+                //        1103 - "НДС 10%",
+                //        1102 - "НДС 18%",
+                //        1105 - "НДС не облагается",
+                //        1107 - "НДС с рассч. ставкой 10%",
+                //        1106 - "НДС с рассч. ставкой 18%",
+
+                <option value="1102" <?=($defaultVatTag == '1102'?'selected':'')?> >НДС 18%</option>
+                <option value="1103" <?=($defaultVatTag == '1103'?'selected':'')?> >НДС 10%</option>
+                <option value="1104" <?=($defaultVatTag == '1104'?'selected':'')?> >НДС 0%</option>
+                <option value="1105" <?=($defaultVatTag == '1105'?'selected':'')?> >НДС не облагается</option>
+                <option value="1106" <?=($defaultVatTag == '1106'?'selected':'')?> >НДС с рассч. ставкой 18%</option>
+                <option value="1107" <?=($defaultVatTag == '1107'?'selected':'')?> >НДС с рассч. ставкой 10%</option>
+            </select>
+        </td>
+    </tr>
+
 
     <?php
     $tabControl->buttons();
@@ -132,25 +178,5 @@ $tabControl->begin();
     <?php
     $tabControl->end();
     ?>
-
-    <? else: ?>
-    <span><?
-        $retailPointInfo = Option::get(MODULE_CASHBOX_NAME, 'retail_point_info', '');
-
-        echo Loc::getMessage("MODULPOS_ASSOCIATED_SUCCESSFULY").' '.$retailPointInfo;
-        ?>
-    </span>
-    <?php
-    $tabControl->buttons();
-    ?>    
-            <input type="submit"
-                name="restore"
-                value="<?=Loc::getMessage("MODULPOS_DELETE_ASSOCIATION") ?>"
-                title="<?=Loc::getMessage("MODULPOS_DELETE_ASSOCIATION") ?>"
-                class="adm-btn-save"
-                />
-            
-   
-    <? endif; ?>
 
 </form>

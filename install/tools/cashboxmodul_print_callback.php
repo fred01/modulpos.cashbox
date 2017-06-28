@@ -11,9 +11,9 @@ if (!CModule::IncludeModule("sale")) {
     return;
 }
 
-defined('MODULE_NAME') or define('MODULE_NAME', 'modulpos.cashbox');
+defined('MODULE_CASHBOX_NAME') or define('MODULE_CASHBOX_NAME', 'modulpos.cashbox');
 
-if (!CModule::IncludeModule(MODULE_NAME))
+if (!CModule::IncludeModule(MODULE_CASHBOX_NAME))
     return;
 
 $request = Main\Application::getInstance()->getContext()->getRequest();
