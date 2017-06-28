@@ -15,5 +15,12 @@ $MESS['REFERENCES_OPTIONS_RESTORED'] = "Связь Битрикс с Модул�
 $MESS['REFERENCES_OPERATING_MODE'] = "Режим работы";
 $MESS['REFERENCES_OPERATING_MODE_DEMO'] = "Демо";
 $MESS['REFERENCES_OPERATING_MODE_PRODUCTION'] = "Рабочий";
+$MESS['REFERENCES_VAT'] = "Ставка НДС";
+$MESS['REFERENCES_VAT_18'] = "НДС 18%";
+$MESS['REFERENCES_VAT_10'] = "НДС 10%";
+$MESS['REFERENCES_VAT_0'] = "НДС 0%";
+$MESS['REFERENCES_VAT_EXAMPT'] = "НДС не облагается";
+$MESS['REFERENCES_VAT_18_118'] = "НДС с рассч. ставкой 18%";
+$MESS['REFERENCES_VAT_10_110'] = "НДС с рассч. ставкой 10%";
 
 ?>

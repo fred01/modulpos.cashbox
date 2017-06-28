@@ -142,7 +142,7 @@ $tabControl->begin();
 
     <tr>
         <td width="40%">
-            Ставка НДС:
+            <?=Loc::getMessage("REFERENCES_VAT") ?>:
         </td>
         <td width="60%">
             <? $defaultVatTag = Option::get(MODULE_CASHBOX_NAME, 'default_vat_tag', '1105') ?>
@@ -155,12 +155,12 @@ $tabControl->begin();
                 //        1107 - "НДС с рассч. ставкой 10%",
                 //        1106 - "НДС с рассч. ставкой 18%",
 
-                <option value="1102" <?=($defaultVatTag == '1102'?'selected':'')?> >НДС 18%</option>
-                <option value="1103" <?=($defaultVatTag == '1103'?'selected':'')?> >НДС 10%</option>
-                <option value="1104" <?=($defaultVatTag == '1104'?'selected':'')?> >НДС 0%</option>
-                <option value="1105" <?=($defaultVatTag == '1105'?'selected':'')?> >НДС не облагается</option>
-                <option value="1106" <?=($defaultVatTag == '1106'?'selected':'')?> >НДС с рассч. ставкой 18%</option>
-                <option value="1107" <?=($defaultVatTag == '1107'?'selected':'')?> >НДС с рассч. ставкой 10%</option>
+                <option value="1102" <?=($defaultVatTag == '1102'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_18")?></option>
+                <option value="1103" <?=($defaultVatTag == '1103'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_10")?></option>
+                <option value="1104" <?=($defaultVatTag == '1104'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_0")?></option>
+                <option value="1105" <?=($defaultVatTag == '1105'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_EXAMPT")?></option>
+                <option value="1106" <?=($defaultVatTag == '1106'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_18_118")?></option>
+                <option value="1107" <?=($defaultVatTag == '1107'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_10_110")?></option>
             </select>
         </td>
     </tr>
