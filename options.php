@@ -147,14 +147,6 @@ $tabControl->begin();
         <td width="60%">
             <? $defaultVatTag = Option::get(MODULE_CASHBOX_NAME, 'default_vat_tag', '1105') ?>
             <select name="default_vat_tag">
-
-                //        1104 - "НДС 0%",
-                //        1103 - "НДС 10%",
-                //        1102 - "НДС 18%",
-                //        1105 - "НДС не облагается",
-                //        1107 - "НДС с рассч. ставкой 10%",
-                //        1106 - "НДС с рассч. ставкой 18%",
-
                 <option value="1102" <?=($defaultVatTag == '1102'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_18")?></option>
                 <option value="1103" <?=($defaultVatTag == '1103'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_10")?></option>
                 <option value="1104" <?=($defaultVatTag == '1104'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_0")?></option>
