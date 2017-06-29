@@ -26,8 +26,9 @@ if (!CashboxModul::validateToken($request->get('token'), $request->get('docId'))
 
 $printedDocId = $request->get('docId');
 $qrCode = urldecode($request->get('qr'));
+$status = $request->get('status');
 
-CashboxModul::log("Callback called, docId=$printedDocId qr=$qrCode");
+CashboxModul::log("Callback called, docId=$printedDocId qr=$qrCode status=$status");
 
 
 $dbRes = CashboxCheckTable::getList(array('select' => array('STATUS'), 'filter' => array('ID' => $printedDocId)));
@@ -36,7 +37,7 @@ if ($data) {
     $result = CashboxCheckTable::update(
         $printedDocId,
         array(
-            'STATUS' => 'Y',
+            'STATUS' => $status == null || $status == "SUCCESS" ? "Y" : "N",
             'LINK_PARAMS' => array('qr' => $qrCode),
             'DATE_PRINT_END' => new Main\Type\DateTime()
         )
