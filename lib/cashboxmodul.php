@@ -27,28 +27,17 @@ class CashboxModul extends Cashbox {
 	}
 	
 	public static function getModulCashboxId() {
-        $CACHE_ID = 'MODULPOS_CASHBOX_ID';
-        $CACHE_EXPIRE_TIME = 31536000;
+		$id = null;
 
-		$id = 0;
-		$cacheManager = Main\Application::getInstance()->getManagedCache();
-		
-		if ($cacheManager->read($CACHE_EXPIRE_TIME, $CACHE_ID)) {
-			$id = $cacheManager->get($CACHE_ID);
-		}
-		
-		if ($id <= 0) {
-			$data = CashboxTable::getRow(
-			                array(
-			                    'select' => array('ID'),
-			                    'filter' => array('=HANDLER' => '\Modulpos\Cashbox\CashboxModul')
-			                ));
+        $data = CashboxTable::getRow(
+                        array(
+                            'select' => array('ID'),
+                            'filter' => array('=HANDLER' => '\Modulpos\Cashbox\CashboxModul')
+                        ));
 
-			if (is_array($data) && $data['ID'] > 0) {
-				$id = $data['ID'];
-				$cacheManager->set($CACHE_ID, $id);
-			}
-		}
+        if (is_array($data) && $data['ID'] > 0) {
+            $id = $data['ID'];
+        }
 		return $id;
 	}
 		
