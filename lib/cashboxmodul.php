@@ -151,7 +151,7 @@ class CashboxModul extends Cashbox {
         }
     }
 
-    private static function getAssociationData() {
+    public static function getAssociationData() {
         $associated_login =  Option::get(MODULE_CASHBOX_NAME, 'associated_login', '#empty#');
         $associated_password = Option::get(MODULE_CASHBOX_NAME, 'associated_password', '');
         if ($associated_login == '#empty#') {
