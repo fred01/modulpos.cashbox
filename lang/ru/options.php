@@ -22,5 +22,7 @@ $MESS['REFERENCES_VAT_0'] = "НДС 0%";
 $MESS['REFERENCES_VAT_EXAMPT'] = "НДС не облагается";
 $MESS['REFERENCES_VAT_18_118'] = "НДС с рассч. ставкой 18%";
 $MESS['REFERENCES_VAT_10_110'] = "НДС с рассч. ставкой 10%";
+$MESS['MODULPOS_DO_NOT_SEND_INVENT_POSITIONS'] = "Не передавать номенлатуру товаров в чеке";
+$MESS['MODULPOS_DO_NOT_SEND_INVENT_POSITIONS_DESCRIPTION'] = "Наименование товаров (работ и услуг) и их количество индивидуальные предприниматели на ПСН, УСН, ЕСХН или ЕНВД (кроме торгующих подакцизными товарами), могут не указывать до 01.02.2021 (<a href='http://www.consultant.ru/document/cons_doc_LAW_200743/6a73a7e61adc45fc3dd224c0e7194a1392c8b071/' target='_blank'>п. 17 ст. 7 Закона № 290-ФЗ</a>)";
 
 ?>

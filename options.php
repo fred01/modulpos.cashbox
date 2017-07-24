@@ -58,8 +58,9 @@ if ((!empty($save) || !empty($restore)) && $request->isPost() && check_bitrix_se
         CAdminMessage::showMessage(Loc::getMessage("REFERENCES_INVALID_VALUE"));
       }
     }
-    if ($request->getPost('default_vat_tag')) {
+    if ($request->getPost('default_vat_tag') && $request->getPost('default_do_not_send_invent_positions')) {
         Option::set(MODULE_CASHBOX_NAME, 'default_vat_tag', $request->getPost('default_vat_tag'));
+        Option::set(MODULE_CASHBOX_NAME, 'default_do_not_send_invent_positions', $request->getPost('default_do_not_send_invent_positions'));
         CAdminMessage::showMessage(array("MESSAGE" => "Настройки успешно сохранены","TYPE" => "OK"));
     }
   }
@@ -154,6 +155,23 @@ $tabControl->begin();
                 <option value="1106" <?=($defaultVatTag == '1106'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_18_118")?></option>
                 <option value="1107" <?=($defaultVatTag == '1107'?'selected':'')?> ><?=Loc::getMessage("REFERENCES_VAT_10_110")?></option>
             </select>
+        </td>
+    </tr>
+    <tr>
+        <td width="40%">
+            <label for="default_do_not_send_invent_positions"><?=Loc::getMessage("MODULPOS_DO_NOT_SEND_INVENT_POSITIONS") ?></label>:
+            <br>
+            <?=Loc::getMessage("MODULPOS_DO_NOT_SEND_INVENT_POSITIONS_DESCRIPTION") ?>
+        </td>
+        <td width="60%">
+            <input type="hidden" name="default_do_not_send_invent_positions" value="0"/>
+            <input
+                    type="checkbox"
+                    id="default_do_not_send_invent_positions"
+                    name="default_do_not_send_invent_positions"
+                    value="1"
+                <?=(Option::get(MODULE_CASHBOX_NAME, "default_do_not_send_invent_positions", false) == true ? 'checked' : '');?>
+            />
         </td>
     </tr>
 
