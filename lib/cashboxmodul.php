@@ -151,7 +151,7 @@ class CashboxModul extends Cashbox {
         }
     }
 
-    private static function getAssociationData() {
+    public static function getAssociationData() {
         $associated_login =  Option::get(MODULE_CASHBOX_NAME, 'associated_login', '#empty#');
         $associated_password = Option::get(MODULE_CASHBOX_NAME, 'associated_password', '');
         if ($associated_login == '#empty#') {
@@ -168,6 +168,9 @@ class CashboxModul extends Cashbox {
         return Loc::getMessage('CASHBOX_MODULPOS_NAME');
     }
 
+    /**
+     * @param \Bitrix\Sale\Cashbox\SellCheck $check
+     */
     public static function enqueCheck($check) {
         static::log('enqueueCheck called!'.var_export($check->getDataForCheck(), TRUE));
         $document = static::createDocuemntByCheck($check->getDataForCheck());
@@ -199,10 +202,15 @@ class CashboxModul extends Cashbox {
 		        );
 		
 		$inventPositions = array();
-		foreach ($checkData['items'] as $item) {
-			$inventPositions[] = static::createItemPositionByCheckItem($item);
-		}
-		$document['inventPositions'] = $inventPositions;
+
+		if(Option::get(MODULE_CASHBOX_NAME, "default_do_not_send_invent_positions", false)) {
+            $inventPositions[] = static::createFakeItemPosition($checkData['items']);
+        } else {
+            foreach ($checkData['items'] as $item) {
+                $inventPositions[] = static::createItemPositionByCheckItem($item);
+            }
+        }
+        $document['inventPositions'] = $inventPositions;
 		
 		$moneyPositions = array();
 		foreach ($checkData['payments'] as $paymentItem) {
@@ -295,7 +303,41 @@ class CashboxModul extends Cashbox {
         $port = in_array($port, array(80, 443)) ? '' : ':'.$port;
         $token = static::createValidationToken($document_number);
         return sprintf('%s://%s%s/bitrix/tools/%s?token=%s', $scheme, $domain, $port, $handler_file, $token);
-    }    
+    }
+
+    /**
+     * Метод подставляет фиктивное значение номенклатуры товаров,
+     * согласно п. 17 ст. 7 Закона № 290-ФЗ
+     *
+     * @see http://www.consultant.ru/document/cons_doc_LAW_200743/6a73a7e61adc45fc3dd224c0e7194a1392c8b071/
+     *
+     * @param $items
+     *
+     * @return array
+     */
+    private static function createFakeItemPosition($items)
+    {
+        $itemName = Loc::getMessage('CASHBOX_FAKE_PRODUCT_NAME');
+        if (SITE_CHARSET == 'windows-1251') {
+            $itemName = mb_convert_encoding($itemName, "utf-8", "windows-1251");
+        }
+
+        $vatTag = Option::get(MODULE_CASHBOX_NAME, "default_vat_tag", '1105');
+
+        $totalSum = 0;
+        foreach ($items as $item){
+            $totalSum = $totalSum + static::createPriceByCheckItem($item);
+        }
+
+        return array(
+            'description' => '',
+            'name' => $itemName,
+            'price' => $totalSum,
+            'quantity' => 1,
+            'vatTag' => intval($vatTag),
+            'discSum' => 0
+        );
+    }
 
     public function buildCheckQuery(Check $check) {
         return array();
