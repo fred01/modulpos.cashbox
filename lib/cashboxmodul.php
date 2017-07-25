@@ -326,7 +326,8 @@ class CashboxModul extends Cashbox {
 
         $totalSum = 0;
         foreach ($items as $item){
-            $totalSum = $totalSum + static::createPriceByCheckItem($item);
+            $sumItem = $item['quantity'] * static::createPriceByCheckItem($item);
+            $totalSum = $totalSum + $sumItem;
         }
 
         return array(
