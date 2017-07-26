@@ -192,12 +192,21 @@ class CashboxModul extends Cashbox {
 
 	private static function createDocuemntByCheck($checkData) {
         $docId = $checkData['unique_id'];
+
+        $customerContact = $checkData['client_email'];
+        if (!$customerContact) {
+            $customerContact = $checkData['client_phone'];
+        }
+        if (!$customerContact) {
+            $customerContact = '';
+        }
+
 		$document = array(
 		           'id' => $checkData['unique_id'],
 		           'checkoutDateTime' => $checkData['date_create']->format(DATE_ATOM),
 		           'docNum' => $docId,
 		           'docType' => $checkData['type'] == 'sell' || $checkData['type'] == 'sellorder' ? 'SALE' : 'RETURN',
-		           'email' => $checkData['client_email'],
+		           'email' => $customerContact,
                    'responseURL' => static::getConnectionLink('cashboxmodul_print_callback.php', $docId).'&docId='.$docId
 		        );
 		
