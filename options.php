@@ -58,7 +58,7 @@ if ((!empty($save) || !empty($restore)) && $request->isPost() && check_bitrix_se
         CAdminMessage::showMessage(Loc::getMessage("REFERENCES_INVALID_VALUE"));
       }
     }
-    if ($request->getPost('default_vat_tag') && $request->getPost('default_do_not_send_invent_positions')) {
+    if ($request->getPost('default_vat_tag') && in_array($request->getPost('default_do_not_send_invent_positions'), array(0,1))) {
         Option::set(MODULE_CASHBOX_NAME, 'default_vat_tag', $request->getPost('default_vat_tag'));
         Option::set(MODULE_CASHBOX_NAME, 'default_do_not_send_invent_positions', $request->getPost('default_do_not_send_invent_positions'));
         CAdminMessage::showMessage(array("MESSAGE" => "Настройки успешно сохранены","TYPE" => "OK"));
