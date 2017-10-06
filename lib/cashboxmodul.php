@@ -118,7 +118,7 @@ class CashboxModul extends Cashbox {
         } else {
             return array(
                 'success' => FALSE,
-                'error' => error_get_last()['message']
+                'error' => error_get_last(){'message'}
             );
         }
     }
@@ -173,7 +173,7 @@ class CashboxModul extends Cashbox {
      */
     public static function enqueCheck($check) {
         static::log('enqueueCheck called!'.var_export($check->getDataForCheck(), TRUE));
-        $document = static::createDocuemntByCheck($check->getDataForCheck());
+        $document = static::createDocumentByCheck($check->getDataForCheck());
         static::log('Modulpos document: '.var_export($document, TRUE));
         $document_as_json = json_encode($document, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         static::log('Modulpos document (JSON):'.var_export($document_as_json, TRUE));
@@ -190,7 +190,7 @@ class CashboxModul extends Cashbox {
         }
     }
 
-	private static function createDocuemntByCheck($checkData) {
+	private static function createDocumentByCheck($checkData) {
         $docId = $checkData['unique_id'];
 
         $customerContact = $checkData['client_email'];
@@ -335,7 +335,7 @@ class CashboxModul extends Cashbox {
 
         $totalSum = 0;
         foreach ($items as $item){
-            $totalSum = $totalSum + static::createPriceByCheckItem($item);
+            $totalSum = $totalSum + static::createPriceByCheckItem($item) * $item['quantity'];
         }
 
         return array(

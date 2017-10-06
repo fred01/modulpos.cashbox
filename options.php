@@ -48,6 +48,7 @@ if ((!empty($save) || !empty($restore)) && $request->isPost() && check_bitrix_se
       if ($validated) {
             $res = CashboxModul::createAssociation($retailpoint_id, $login, $password, $operating_mode);
             if ($res['success'] === TRUE) {
+                Option::set(MODULE_CASHBOX_NAME, 'operating_mode', $operating_mode);
                 Option::set(MODULE_CASHBOX_NAME, 'associated_login', $res['data']['associated_login']);
                 Option::set(MODULE_CASHBOX_NAME, 'associated_password', $res['data']['associated_password']);
                 CAdminMessage::showMessage(array("MESSAGE" => Loc::getMessage("MODULPOS_ASSOCIATION_CREATED"),"TYPE" => "OK"));
