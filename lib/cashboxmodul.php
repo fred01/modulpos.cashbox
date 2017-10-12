@@ -118,7 +118,7 @@ class CashboxModul extends Cashbox {
         } else {
             return array(
                 'success' => FALSE,
-                'error' => error_get_last(){'message'}
+                'error' => error_get_last()['message']
             );
         }
     }
